@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Organizador de tareas</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <h1 class="header">TODO list con VueJS</h1>
+      <div class="relative">
+        <form v-on:submit.prevent="agregarTarea">
+          <input type="text" placeholder="Escribe una tarea..." v-model="nuevaTarea">
+          <button class="btn">Agregar</button>
+        </form>
+      </div>
+      
+      <div class="listado-container" v-cloak>
+        <h3 v-if="has_task">Mis tareas</h3>
+        <ul>
+          <li v-for="(tarea, index) in tareas" v-on:click.self="checked(index)" v-bind:class="{ 'ready': tarea.do }"><i v-bind:class="taskicon(tarea.do)"></i> {{tarea.nombre}} <i class="fas fa-trash-alt deleter" title="Borrar tarea" v-on:click="borrarTarea(index)"></i></li>
+        </ul>
+      </div>
+    </div>
+    <a href="http://www.marcelpernia.website" class="copy">Marcel Pernía</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/notie"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        nuevaTarea: '',
+        tareas: []
+      },
+      methods: {
+        agregarTarea() {
+          let task = this.nuevaTarea.trim();
+          if (task != '') {
+            this.tareas.unshift({nombre: task, do: false});
+            this.nuevaTarea = '';
+            notie.alert({ type: 'success', text: 'Nueva tarea agregada!'});
+          } else {
+            notie.alert({ type: 'warning', text: 'Escriba una tarea para poder agregarla.'});
+          }
+        },
+        checked(e) {
+          this.tareas[e].do = !this.tareas[e].do;
+        },
+        taskicon(e) {
+          return e ? 'fas fa-check-square' : 'far fa-square';
+        },
+        borrarTarea(e) {
+          this.tareas.splice(e, 1);
+          notie.alert({text: 'Tarea borrada'});
+        }
+      },
+      computed: {
+        has_task() {
+          return this.tareas.length != 0 ? true : null;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
